@@ -48,3 +48,27 @@ function continuouslyFloatPortfolio(time) {
 }
 requestAnimationFrame(continuouslyFloatPortfolio);
 resetMotion();
+
+document.querySelectorAll('.motion-card, .profile-photo-wrap, .profile-stickers').forEach((card, index) => {
+  card.style.animationDelay = `${index * -0.35}s`;
+  card.addEventListener('pointermove', (event) => {
+    const rect = card.getBoundingClientRect();
+    const x = (event.clientX - rect.left) / rect.width - .5;
+    const y = (event.clientY - rect.top) / rect.height - .5;
+    card.style.setProperty('--tilt-x', `${(y * -5).toFixed(2)}deg`);
+    card.style.setProperty('--tilt-y', `${(x * 6).toFixed(2)}deg`);
+  });
+  card.addEventListener('pointerleave', () => {
+    card.style.removeProperty('--tilt-x');
+    card.style.removeProperty('--tilt-y');
+  });
+});
+
+const experienceList = document.querySelector('.profile-right section:first-child ul');
+if (experienceList) {
+  experienceList.innerHTML = `
+    <li>不可里予工作室 <small>2021—2025 · 视觉平面设计成员</small><p>自主打造成套原创表情包、品牌专属IP形象，落地SVG公众号互动图文、H5动态视觉、动效插画等新媒体物料。</p></li>
+    <li>夜幕工作室 <small>2021—2023 · 画师</small></li>
+    <li>星力海蓝文化传媒有限公司 <small>2023—2024 · 实习设计师</small><p>承接电信品牌商用宣传海报、多位艺人线上宣发物料的设计工作。</p></li>
+    <li>乐我无限科技有限责任公司 <small>2026 · 海外工具产品设计实习生</small><p>负责海外图片编辑产品 PhotoGrid 的视觉物料产出，面向美区用户市场。</p></li>`;
+}
