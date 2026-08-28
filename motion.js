@@ -72,3 +72,5 @@ if (experienceList) {
     <li>星力海蓝文化传媒有限公司 <small>2023—2024 · 实习设计师</small><p>承接电信品牌商用宣传海报、多位艺人线上宣发物料的设计工作。</p></li>
     <li>乐我无限科技有限责任公司 <small>2026 · 海外工具产品设计实习生</small><p>负责海外图片编辑产品 PhotoGrid 的视觉物料产出，面向美区用户市场。</p></li>`;
 }
+const interestIcons = document.querySelector('.interest-icons');
+if (interestIcons) interestIcons.innerHTML = '<span class="icon-bolt">ϟ</span><span class="icon-rook">♜</span><span class="icon-lines">☰</span><span class="icon-circle"></span>';
