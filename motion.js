@@ -49,6 +49,22 @@ function continuouslyFloatPortfolio(time) {
 requestAnimationFrame(continuouslyFloatPortfolio);
 resetMotion();
 
+// 首页物体即使不移动鼠标也会持续呼吸、漂浮；鼠标靠近时仍会叠加更明显的偏移。
+const ambientHeroItems = [...motionArea.querySelectorAll('.pipe, .tile, .bar, .hero-title span')];
+function animateHeroAmbient(time) {
+  ambientHeroItems.forEach((item, index) => {
+    const isPipe = item.classList.contains('pipe');
+    const range = isPipe ? 18 : item.matches('.hero-title span') ? 11 : 16;
+    const x = Math.sin(time / (1250 + index * 180) + index * 1.9) * range;
+    const y = Math.cos(time / (1550 + index * 130) + index * 1.35) * range * .72;
+    item.style.setProperty('--ambient-x', `${x.toFixed(1)}px`);
+    item.style.setProperty('--ambient-y', `${y.toFixed(1)}px`);
+  });
+  motionArea.style.setProperty('--hero-shine', `${.12 + Math.sin(time / 1800) * .06}`);
+  requestAnimationFrame(animateHeroAmbient);
+}
+requestAnimationFrame(animateHeroAmbient);
+
 document.querySelectorAll('.motion-card, .profile-photo-wrap, .profile-stickers').forEach((card, index) => {
   card.style.animationDelay = `${index * -0.35}s`;
   card.addEventListener('pointermove', (event) => {
@@ -74,3 +90,39 @@ if (experienceList) {
 }
 const interestIcons = document.querySelector('.interest-icons');
 if (interestIcons) interestIcons.innerHTML = '<svg class="interest-svg" viewBox="0 0 360 90" role="img" aria-label="相机、行李箱、书本、调色盘"><g fill="none" stroke="var(--green)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="28" width="65" height="42" rx="8"/><path d="M24 28l6-10h22l6 10M21 49h5m35 0h-5"/><circle cx="41" cy="49" r="14"/></g><g fill="none" stroke="var(--yellow)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><rect x="125" y="23" width="35" height="50"/><path d="M132 15h21v8M125 35h35M132 73v8m21-8v8"/></g><g fill="none" stroke="var(--blue)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><rect x="208" y="14" width="38" height="62" rx="4"/><path d="M246 19h7v52h-7M208 68h38"/></g><g fill="none" stroke="var(--pink)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><path d="M274 24v42c0 7 6 12 13 12h14c19 0 28-10 28-23 0-20-15-34-35-34h-20z"/><circle cx="304" cy="48" r="4" fill="var(--pink)" stroke="none"/><circle cx="320" cy="43" r="4" fill="var(--pink)" stroke="none"/><circle cx="328" cy="57" r="4" fill="var(--pink)" stroke="none"/></g></svg>';
+
+// 联系页的烟花会沿着鼠标持续喷出，同时也会在整个画面里不间断地出现。
+const contact = document.querySelector('.contact');
+if (contact) {
+  const fireworkLayer = contact.querySelector('.contact-fireworks');
+  const colors = ['var(--yellow)', 'var(--pink)', 'var(--blue)', 'var(--green)', 'var(--orange)'];
+  let lastTrail = 0;
+  const burst = (x, y, count = 7) => {
+    for (let i = 0; i < count; i += 1) {
+      const spark = document.createElement('i');
+      const angle = (Math.PI * 2 * i) / count + Math.random() * .45;
+      const distance = 24 + Math.random() * 70;
+      spark.className = 'cursor-spark';
+      spark.style.setProperty('--spark-x', `${x}px`);
+      spark.style.setProperty('--spark-y', `${y}px`);
+      spark.style.setProperty('--spark-dx', `${Math.cos(angle) * distance}px`);
+      spark.style.setProperty('--spark-dy', `${Math.sin(angle) * distance}px`);
+      spark.style.setProperty('--spark-color', colors[(i + Math.floor(Math.random() * colors.length)) % colors.length]);
+      spark.style.setProperty('--spark-size', `${5 + Math.random() * 9}px`);
+      fireworkLayer.append(spark);
+      spark.addEventListener('animationend', () => spark.remove());
+    }
+  };
+  contact.addEventListener('pointermove', (event) => {
+    const now = performance.now();
+    if (now - lastTrail < 58) return;
+    const rect = contact.getBoundingClientRect();
+    burst(event.clientX - rect.left, event.clientY - rect.top, 5);
+    lastTrail = now;
+  });
+  setInterval(() => {
+    const rect = contact.getBoundingClientRect();
+    if (rect.bottom < 0 || rect.top > window.innerHeight) return;
+    burst(30 + Math.random() * Math.max(40, rect.width - 60), 30 + Math.random() * Math.max(40, rect.height - 60), 5);
+  }, 520);
+}
