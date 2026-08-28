@@ -91,10 +91,9 @@ if (experienceList) {
 const motionInterestIcons = document.querySelector('.interest-icons');
 if (motionInterestIcons) motionInterestIcons.innerHTML = '<svg class="interest-svg" viewBox="0 0 360 90" role="img" aria-label="相机、行李箱、书本、调色盘"><g fill="none" stroke="var(--green)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="28" width="65" height="42" rx="8"/><path d="M24 28l6-10h22l6 10M21 49h5m35 0h-5"/><circle cx="41" cy="49" r="14"/></g><g fill="none" stroke="var(--yellow)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><rect x="125" y="23" width="35" height="50"/><path d="M132 15h21v8M125 35h35M132 73v8m21-8v8"/></g><g fill="none" stroke="var(--blue)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><rect x="208" y="14" width="38" height="62" rx="4"/><path d="M246 19h7v52h-7M208 68h38"/></g><g fill="none" stroke="var(--pink)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><path d="M274 24v42c0 7 6 12 13 12h14c19 0 28-10 28-23 0-20-15-34-35-34h-20z"/><circle cx="304" cy="48" r="4" fill="var(--pink)" stroke="none"/><circle cx="320" cy="43" r="4" fill="var(--pink)" stroke="none"/><circle cx="328" cy="57" r="4" fill="var(--pink)" stroke="none"/></g></svg>';
 
-// 联系页的烟花会沿着鼠标持续喷出，同时也会在整个画面里不间断地出现。
-const contact = document.querySelector('.contact');
-if (contact) {
-  const fireworkLayer = contact.querySelector('.contact-fireworks');
+// 首页与联系页的烟花都会沿着鼠标持续喷出，同时也会在整个画面里不间断地出现。
+function setupSparkField(section, fireworkLayer) {
+  if (!section || !fireworkLayer) return;
   const colors = ['var(--yellow)', 'var(--pink)', 'var(--blue)', 'var(--green)', 'var(--orange)'];
   let lastTrail = 0;
   const burst = (x, y, count = 7) => {
@@ -113,16 +112,25 @@ if (contact) {
       spark.addEventListener('animationend', () => spark.remove());
     }
   };
-  contact.addEventListener('pointermove', (event) => {
+  section.addEventListener('pointermove', (event) => {
     const now = performance.now();
     if (now - lastTrail < 58) return;
-    const rect = contact.getBoundingClientRect();
+    const rect = section.getBoundingClientRect();
     burst(event.clientX - rect.left, event.clientY - rect.top, 5);
     lastTrail = now;
   });
   setInterval(() => {
-    const rect = contact.getBoundingClientRect();
+    const rect = section.getBoundingClientRect();
     if (rect.bottom < 0 || rect.top > window.innerHeight) return;
     burst(30 + Math.random() * Math.max(40, rect.width - 60), 30 + Math.random() * Math.max(40, rect.height - 60), 5);
   }, 520);
 }
+
+const contact = document.querySelector('.contact');
+setupSparkField(contact, contact?.querySelector('.contact-fireworks'));
+
+const heroSparkLayer = document.createElement('div');
+heroSparkLayer.className = 'hero-fireworks';
+heroSparkLayer.setAttribute('aria-hidden', 'true');
+motionArea.append(heroSparkLayer);
+setupSparkField(motionArea, heroSparkLayer);
