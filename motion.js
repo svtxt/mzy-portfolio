@@ -51,7 +51,7 @@ resetMotion();
 
 // 首页物体即使不移动鼠标也会持续呼吸、漂浮；鼠标靠近时仍会叠加更明显的偏移。
 const ambientHeroItems = [...motionArea.querySelectorAll('.pipe, .tile, .bar, .hero-title span')]
-  .filter((item) => !item.classList.contains('tile-orange') && !item.matches('.hero-title span:nth-child(3)'));
+  .filter((item) => !item.classList.contains('tile-orange') && !item.matches('.hero-title span'));
 function animateHeroAmbient(time) {
   ambientHeroItems.forEach((item, index) => {
     const isPipe = item.classList.contains('pipe');
